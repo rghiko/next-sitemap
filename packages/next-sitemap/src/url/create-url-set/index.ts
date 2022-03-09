@@ -106,7 +106,9 @@ export const createUrlSet = async (
   for (const url of urlSet) {
     const sitemapField = await config.transform!(config, url)
 
-    if (!sitemapField?.loc) continue
+    if (!sitemapField?.loc) {
+      continue
+    }
 
     sitemapFields.push(sitemapField)
 

@@ -16,6 +16,7 @@ describe('next-sitemap', () => {
   })
 
   test('cleanPath : Relative Path', () => {
+    expect(cleanPath('//')).toBe('/')
     expect(cleanPath('./epic///awesome///path')).toBe('./epic/awesome/path')
   })
 
@@ -73,5 +74,12 @@ describe('next-sitemap', () => {
     expect(replaceDefaultLocale('/en-USA/home')).toBe('/en-USA/home')
     expect(replaceDefaultLocale('/fr')).toBe('/fr')
     expect(replaceDefaultLocale('/fr/about')).toBe('/fr/about')
+  })
+
+  test('createDefaultLocaleReplace: replaces multiple occurrence`', () => {
+    const replaceDefaultLocale = createDefaultLocaleReplace('en-US')
+
+    expect(replaceDefaultLocale('/en-US/en-US')).toBe('/')
+    expect(replaceDefaultLocale('/de-DE/en-US/contact')).toBe('/de-DE/contact')
   })
 })

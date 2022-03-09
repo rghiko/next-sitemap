@@ -1,7 +1,7 @@
 /* eslint-disable no-useless-escape */
 
 export const cleanPath = (text: string): string => {
-  return text.replace(/([^:])(\/\/+)/g, '$1/')
+  return text.replace(/(https?:\/\/)|(\/)+/g, '$1$2')
 }
 
 export const isURL = (text: string): boolean => {
@@ -40,6 +40,11 @@ export const isNextInternalUrl = (path: string): boolean => {
  * @param defaultLocale defaultLocale as provided by i18n within next config
  */
 export const createDefaultLocaleReplace = (defaultLocale: string): any => {
-  const defaultLocaleRegExp = new RegExp(`^/${defaultLocale}($|/)`)
-  return (path: string): string => path.replace(defaultLocaleRegExp, '/')
+  return (path: string): string => {
+    const regExp = new RegExp(
+      `(?:^|[^-+.()\\w])(${defaultLocale})(?![-+.()\\w])`,
+      'g'
+    )
+    return cleanPath(path.replace(regExp, '/'))
+  }
 }
