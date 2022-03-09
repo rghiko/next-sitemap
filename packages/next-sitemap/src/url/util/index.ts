@@ -22,12 +22,12 @@ export const isNextInternalUrl = (path: string): boolean => {
 }
 
 /**
- * Creates a replace function to replace the default locale
+ * Creates a replace function to replace the locale
  * Avoids creating the same RegExp within each replace
  *
  * Replaces only if the path does not contain the locale as an actual valid path
  *
- * Given a default locale of en-US it replaces:
+ * Given a locale of en-US it replaces:
  * /en-US -> /
  * /en-US/home -> /home
  * /en-US/home/ -> /home/
@@ -37,14 +37,11 @@ export const isNextInternalUrl = (path: string): boolean => {
  * /en-USA/home -> /en-USA/home
  * /en-US-home -> /en-US-home
  *
- * @param defaultLocale defaultLocale as provided by i18n within next config
+ * @param locale locale as provided by i18n within next config
  */
-export const createDefaultLocaleReplace = (defaultLocale: string): any => {
+export const createLocaleReplace = (locale: string): any => {
   return (path: string): string => {
-    const regExp = new RegExp(
-      `(?:^|[^-+.()\\w])(${defaultLocale})(?![-+.()\\w])`,
-      'g'
-    )
+    const regExp = new RegExp(`(?:^|[^-+.()\\w])(${locale})(?![-+.()\\w])`, 'g')
     return cleanPath(path.replace(regExp, '/'))
   }
 }

@@ -1,11 +1,12 @@
 /* eslint-disable no-extra-boolean-cast */
 /* eslint-disable @typescript-eslint/no-non-null-assertion */
-import { IConfig, INextManifest, ISitemapField } from '../../interface'
-import {
-  isNextInternalUrl,
-  generateUrl,
-  createDefaultLocaleReplace,
-} from '../util'
+import type {
+  IAlternateRef,
+  IConfig,
+  INextManifest,
+  ISitemapField,
+} from '../../interface'
+import { isNextInternalUrl, generateUrl, createLocaleReplace } from '../util'
 import { removeIfMatchPattern } from '../../array'
 import { transformSitemap } from '../../config'
 
@@ -37,6 +38,25 @@ export const absoluteUrl = (
   return entityEscapedUrl(url)
 }
 
+export const normalizeAlternativeRef = (
+  altRef: IAlternateRef,
+  field: ISitemapField,
+  trailingSlash?: boolean
+) => {
+  const href = altRef?.hrefIsAbsolute
+    ? altRef?.href
+    : absoluteUrl(
+        `${altRef?.href}/${altRef?.hreflang}`,
+        field.loc,
+        trailingSlash
+      )
+
+  return {
+    ...altRef,
+    href,
+  }
+}
+
 /**
  * Normalize sitemap fields to include absolute urls
  * @param config
@@ -44,22 +64,41 @@ export const absoluteUrl = (
  */
 export const normalizeSitemapField = (
   config: IConfig,
-  field: ISitemapField
+  field: ISitemapField,
+  defaultLocale?: string
 ): ISitemapField => {
   // Handle trailing Slash
   const trailingSlash =
     'trailingSlash' in field ? field.trailingSlash : config.trailingSlash
 
+  const alternateRefs = (field.alternateRefs ?? [])
+    .map((ref) => {
+      if (field.loc.includes(ref.hreflang)) {
+        return null
+      }
+
+      let relativeHref = absoluteUrl(
+        `${ref?.href}/${ref?.hreflang}`,
+        field.loc,
+        trailingSlash
+      )
+
+      if (defaultLocale) {
+        relativeHref = createLocaleReplace(defaultLocale)(relativeHref)
+      }
+
+      return {
+        ...ref,
+        href: ref?.hrefIsAbsolute ? ref?.href : relativeHref,
+      }
+    })
+    .filter(Boolean) as any
+
   return {
     ...field,
     trailingSlash,
     loc: absoluteUrl(config.siteUrl, field?.loc, trailingSlash), // create absolute urls based on sitemap fields
-    alternateRefs: (field.alternateRefs ?? []).map((alternateRef) => ({
-      href: alternateRef.hrefIsAbsolute
-        ? alternateRef.href
-        : absoluteUrl(alternateRef.href, field.loc, trailingSlash),
-      hreflang: alternateRef.hreflang,
-    })),
+    alternateRefs,
   }
 }
 
@@ -86,7 +125,7 @@ export const createUrlSet = async (
   // Remove default locale if i18n is enabled
   if (i18n) {
     const { defaultLocale } = i18n
-    const replaceDefaultLocale = createDefaultLocaleReplace(defaultLocale)
+    const replaceDefaultLocale = createLocaleReplace(defaultLocale)
     urlSet = urlSet.map(replaceDefaultLocale)
   }
 
@@ -143,5 +182,7 @@ export const createUrlSet = async (
     }
   }
 
-  return sitemapFields.map((x) => normalizeSitemapField(config, x))
+  return sitemapFields.map((x) =>
+    normalizeSitemapField(config, x, i18n?.defaultLocale)
+  )
 }

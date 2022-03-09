@@ -3,7 +3,7 @@ import {
   cleanPath,
   generateUrl,
   isNextInternalUrl,
-  createDefaultLocaleReplace,
+  createLocaleReplace,
 } from './index'
 
 describe('next-sitemap', () => {
@@ -63,7 +63,7 @@ describe('next-sitemap', () => {
   })
 
   test('createDefaultLocaleReplace: replaces default locale within path`', () => {
-    const replaceDefaultLocale = createDefaultLocaleReplace('en-US')
+    const replaceDefaultLocale = createLocaleReplace('en-US')
 
     expect(replaceDefaultLocale('/')).toBe('/')
     expect(replaceDefaultLocale('/en-US')).toBe('/')
@@ -77,7 +77,7 @@ describe('next-sitemap', () => {
   })
 
   test('createDefaultLocaleReplace: replaces multiple occurrence`', () => {
-    const replaceDefaultLocale = createDefaultLocaleReplace('en-US')
+    const replaceDefaultLocale = createLocaleReplace('en-US')
 
     expect(replaceDefaultLocale('/en-US/en-US')).toBe('/')
     expect(replaceDefaultLocale('/de-DE/en-US/contact')).toBe('/de-DE/contact')

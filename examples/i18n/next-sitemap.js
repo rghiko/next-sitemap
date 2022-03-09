@@ -1,7 +1,9 @@
 /** @type {import('next-sitemap').IConfig} */
 
+const siteUrl = process.env.SITE_URL || 'https://example.com'
+
 module.exports = {
-  siteUrl: process.env.SITE_URL || 'https://example.com',
+  siteUrl,
   generateRobotsTxt: true,
   // optional
   robotsTxtOptions: {

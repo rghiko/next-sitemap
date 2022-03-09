@@ -1,4 +1,4 @@
-import { AlternateRef, ISitemapField } from '../interface'
+import type { IAlternateRef, ISitemapField } from '../interface'
 import { withXMLTemplate } from './template'
 
 export const buildSitemapXml = (fields: ISitemapField[]): string => {
@@ -31,7 +31,7 @@ export const buildSitemapXml = (fields: ISitemapField[]): string => {
 }
 
 export const buildAlternateRefsXml = (
-  alternateRefs: Array<AlternateRef> = []
+  alternateRefs: Array<IAlternateRef> = []
 ): string => {
   return alternateRefs
     .map((alternateRef) => {
