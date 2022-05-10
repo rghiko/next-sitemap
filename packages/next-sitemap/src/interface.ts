@@ -136,6 +136,8 @@ export interface IConfig {
 
   alternateRefs?: Array<AlternateRef>
 
+  imageRefs?: Array<ImageRef>
+
   /**
    * A transformation function, which runs for each relative-path in the sitemap. Returning null value from the transformation function will result in the exclusion of that specific path from the generated sitemap list.
    * @link https://github.com/iamvishnusankar/next-sitemap#custom-transformation-function
@@ -223,10 +225,19 @@ export type ISitemapField = {
   changefreq?: Changefreq
   priority?: number
   alternateRefs?: Array<AlternateRef>
+  imageRefs?: Array<ImageRef>
   trailingSlash?: boolean
 }
 
 export interface INextSitemapResult {
   generatedSitemaps: string[]
   runtimePaths: IRuntimePaths
+}
+
+export type ImageRef = {
+  loc: string
+  caption?: string
+  title: string
+  geo_location?: string
+  license?: string
 }
