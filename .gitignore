@@ -68,3 +68,5 @@ junit.xml
 tsconfig.tsbuildinfo
 **/public
 **/public
+.vscode/settings.json
+package-lock.json
